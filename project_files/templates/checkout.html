@@ -1,0 +1,106 @@
+<!-- checkout.html -->
+<!-- Pagina di pagamento con form per il completamento dell'ordine -->
+
+{% extends 'base.html' %}
+
+{% block title %}Pagamento{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- Checkout Form -->
+    <div class="container mt-5">
+        <h2>Pagamento</h2>
+        <hr />
+        {% if error is defined %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        {% if succ is defined %}
+            <div class="alert alert-success">{{ succ }}</div>
+        {% endif %}
+        <form action="/checkout" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Indirizzo di Fatturazione</h4>
+                    <div class="form-group">
+                        <label for="fullname">Nome Completo</label>
+                        <input type="text" class="form-control" id="destinatario" name="destinatario" value="{% if user is defined %}{{ user.nome }} {{ user.cognome }}{% endif %}" placeholder="Inserisci il tuo nome completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{% if user is defined %}{{ user.email }}{% endif %}" placeholder="Inserisci la tua email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Indirizzo</label>
+                        <input type="text" class="form-control" id="indirizzo" name="indirizzo" placeholder="Inserisci il tuo indirizzo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Città</label>
+                        <input type="text" class="form-control" id="città" name="città" placeholder="Inserisci la tua città" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Provincia</label>
+                        <input type="text" class="form-control" id="provincia" name="provincia" placeholder="Inserisci la tua provincia" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">CAP</label>
+                        <input type="text" class="form-control" id="cap" name="cap" placeholder="Inserisci il tuo CAP" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Dettagli del Pagamento</h4>
+                    <div class="form-group">
+                        <label for="ccname">Nome sulla Carta</label>
+                        <input type="text" class="form-control" id="ccname" name="ccname" placeholder="Inserisci il nome sulla carta" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ccnumber">Numero della Carta di Credito</label>
+                        <input type="text" class="form-control" id="ccnumber" name="ccnumber" placeholder="Inserisci il numero della carta" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ccexpiration">Data di Scadenza</label>
+                        <input type="text" class="form-control" id="ccexpiration" name="ccexpiration" placeholder="MM/AA" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cccvv">CVV</label>
+                        <input type="text" class="form-control" id="cccvv" name="cccvv" placeholder="Inserisci il CVV" required>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block mt-3">Completa il Pagamento</button>
+        </form>
+
+        <!-- Cart Table -->
+        <h4 class="mt-5">Prodotti nel Carrello</h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Prodotto</th>
+                <th>Quantità</th>
+                <th>Prezzo</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in products %}
+                <tr>
+                    <td>{{ item.prodotto }}</td>
+                    <td>{{ item.quantità }}</td>
+                    <td>€{{ "%.2f"|format(item.prezzo) }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2"><strong>Totale</strong></td>
+                <td><strong>€{{ "%.2f"|format(total) }}</strong></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

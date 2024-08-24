@@ -1,0 +1,24 @@
+<!-- 404.html -->
+<!-- Pagina di errore 404 -->
+
+{% extends 'base.html' %}
+
+{% block title %}Pagina non trovata{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>404 - Pagina non trovata</h1>
+        <p>La pagina che stai cercando non esiste.</p>
+        <a href="/" class="btn btn-primary">Torna alla Home</a>
+    </div>
+{% endblock %}

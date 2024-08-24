@@ -1,0 +1,97 @@
+<!-- edit_product.html -->
+<!-- Pagina per la modifica di un prodotto già esistente nel database, acessibile solo dal venditore del prodotto -->
+
+{% extends "base.html" %}
+
+{% block title %} Modifica Prodotto {% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- edit Product Form -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <h2 class="card-header">Modifica Prodotto</h2>
+                    <div class="card-body">
+                        <form method="POST" action="/edit_product/{{ product.idprodotto }}" accept-charset="utf-8" enctype="multipart/form-data">
+                            {% if error is defined %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endif %}
+                            {% if succ is defined %}
+                                <div class="alert alert-success">{{ succ }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="image">Immagine</label>
+                                <img src="{{ url_for('static', filename='uploads/prodotto_' ~ product.idprodotto ~ '.jpg') }}" class="form-control mx-auto" style="width: 200px; height: 200px;" alt="image of product">
+                                <div class="alert alert-warning mt-2">L'immagine non può essere modificata.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Titolo</label>
+                                <input type="text" class="form-control" id="titolo" name="titolo" value="{{ product.titolo }}" placeholder="Inserisci il titolo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Autore</label>
+                                <input type="text" class="form-control" id="autore" name="autore" value="{{ product.autore }}" placeholder="Inserisci l'autore" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Editore</label>
+                                <input type="text" class="form-control" id="editore" name="editore" value="{{ product.editore }}" placeholder="Inserisci l'editore" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Anno pubblicazione</label>
+                                <input type="number" class="form-control" id="annoPubblicazione" name="annoPubblicazione" value="{{ product.annopubblicazione }}" placeholder="Inserisci l'anno di pubblicazione" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Categoria</label>
+                                <select class="form-control" id="categoria" name="categoria">
+                                    <option value="Romanzi e Classici" {% if product.categoria == 'Romanzi e Classici' %}selected{% endif %}>Romanzi e Classici</option>
+                                    <option value="Fantasy e Horror" {% if product.categoria == 'Fantasy e Horror' %}selected{% endif %}>Fantasy e Horror</option>
+                                    <option value="Amore e Passione" {% if product.categoria == 'Amore e Passione' %}selected{% endif %}>Amore e Passione</option>
+                                    <option value="Thriller" {% if product.categoria == 'Thriller' %}selected{% endif %}>Thriller</option>
+                                    <option value="Gialli" {% if product.categoria == 'Gialli' %}selected{% endif %}>Gialli</option>
+                                    <option value="Saggistica" {% if product.categoria == 'Saggistica' %}selected{% endif %}>Saggistica</option>
+                                    <option value="Bambini" {% if product.categoria == 'Bambini' %}selected{% endif %}>Bambini</option>
+                                    <option value="Fumetti e Manga" {% if product.categoria == 'Fumetti e Manga' %}selected{% endif %}>Fumetti e Manga</option>
+                                    <option value="Scuola" {% if product.categoria == 'Scuola' %}selected{% endif %}>Scuola</option>
+                                    <option value="Altro" {% if product.categoria == 'Altro' %}selected{% endif %}>Altro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Descrizione</label>
+                                <textarea class="form-control" id="descrizione" name="descrizione" required>{{ product.descrizione }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Prezzo</label>
+                                <input type="text" class="form-control" id="prezzo" name="prezzo" value="{{ product.prezzo }}" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantità</label>
+                                <input type="number" class="form-control" id="quantita" name="quantita" value="{{ product.quantità }}" min="0" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Modifica Prodotto</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var prezzoInput = document.getElementById('prezzo');
+            prezzoInput.value = prezzoInput.value.replace(',', '.');
+        });
+    </script>
+{% endblock %}

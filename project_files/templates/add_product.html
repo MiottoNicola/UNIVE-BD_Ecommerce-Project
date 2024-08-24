@@ -1,0 +1,97 @@
+<!-- add_product.html -->
+<!-- Pagina con form per l'aggiunta di prodotti nel database accessibile solameente ai venditori  -->
+
+{% extends "base.html" %}
+
+{% block title %} Aggiungi Prodotto {% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- Add Product Form -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <h2 class="card-header">Aggiungi Prodotto</h2>
+                    <div class="card-body">
+                        <form method="POST" action="/add_product" accept-charset="utf-8" enctype="multipart/form-data">
+                            {% if error is defined %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endif %}
+                            {% if succ is defined %}
+                                <div class="alert alert-success">{{ succ }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="image">Immagine</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Titolo</label>
+                                <input type="text" class="form-control" id="titolo" name="titolo" placeholder="Inserisci il titolo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Autore</label>
+                                <input type="text" class="form-control" id="autore" name="autore" placeholder="Inserisci l'autore" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Editore</label>
+                                <input type="text" class="form-control" id="editore" name="editore" placeholder="Inserisci l'editore" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Anno pubblicazione</label>
+                                <input type="number" class="form-control" id="annoPubblicazione" name="annoPubblicazione" placeholder="Inserisci l'anno di pubblicazione" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Categoria</label>
+                                <select class="form-control" id="categoria" name="categoria">
+                                    <option value="Romanzi e Classici">Romanzi e Classici</option>
+                                    <option value="Fantasy e Horror">Fantasy e Horror</option>
+                                    <option value="Amore e Passione">Amore e Passione</option>
+                                    <option value="Thriller">Thriller</option>
+                                    <option value="Gialli">Gialli</option>
+                                    <option value="Saggistica">Saggistica</option>
+                                    <option value="Bambini">Bambini</option>
+                                    <option value="Fumetti e Manga">Fumetti e Manga</option>
+                                    <option value="Scuola">Scuola</option>
+                                    <option value="Altro">Altro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Descrizione</label>
+                                <textarea class="form-control" id="descrizione" name="descrizione" placeholder="Inserisci la descrizione" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Prezzo</label>
+                                <input type="text" class="form-control" id="prezzo" name="prezzo" placeholder="Inserisci il prezzo" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantità</label>
+                                <input type="number" class="form-control" id="quantita" name="quantita" placeholder min="0" value="1">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Aggiungi Prodotto</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        <!-- Sostituisce la virgolacon punto nei numeri prima di inviare i dati -->
+        document.querySelector('form').addEventListener('submit', function(event) {
+            var prezzoInput = document.getElementById('prezzo');
+            prezzoInput.value = prezzoInput.value.replace(',', '.');
+        });
+    </script>
+{% endblock %}

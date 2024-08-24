@@ -1,0 +1,132 @@
+<!-- seller_order.html -->
+<!-- Pagina di dettagli dell'ordine per i venditori -->
+
+{% extends 'base.html' %}
+
+{% block title %}Dettagli Ordine{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Dettagli Ordine</h2>
+        <!-- Dettagli generali dell'ordine -->
+        <p>
+            <strong>Numero Ordine:</strong> {{ order.idordine }}<br />
+            <strong>Data:</strong> {{ order.data }}<br />
+            <strong>Totale:</strong> €{{ "%.2f"|format(order.totale) }}<br/>
+            <strong>Stato:</strong>
+            <select id="order-status" data-order-id="{{ order.idordine }}">
+                <option value="1" {% if order.stato == 1 %}selected{% endif %}>Nuovo</option>
+                <option value="2" {% if order.stato == 2 %}selected{% endif %}>In lavorazione</option>
+                <option value="3" {% if order.stato == 3 %}selected{% endif %}>Spedito</option>
+            </select>
+
+            <h4>Cliente</h4>
+            <strong>Nome:</strong>
+                {% if order_user is none %}
+                    non disponibile
+                {% else %}
+                    {{ order_user.nome }}
+                {% endif %}<br />
+            <strong>Cognome:</strong>
+                {% if order_user is none %}
+                    non disponibile
+                {% else %}
+                    {{ order_user.cognome }}
+                {% endif %}<br />
+            <strong>Email:</strong>
+                {% if order_user is none %}
+                    non disponibile
+                {% else %}
+                    {{ order_user.email }}
+                {% endif %}<br />
+            <strong>Indirizzo:</strong> {{ order.indirizzo }}<br />
+            <strong>Città:</strong> {{ order.città }}<br />
+            <strong>Provincia:</strong> {{ order.provincia }}<br />
+            <strong>CAP:</strong> {{ order.cap }}<br />
+        </p>
+        <!-- Dettagli dei prodotti dentro l'ordine -->
+        <h3>Prodotti</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Quantità</th>
+                <th>Prezzo</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in products %}
+                <tr>
+                    <td>{{ item.titolo }}</td>
+                    <td>{{ item.quantità }}</td>
+                    <td>€{{ "%.2f"|format(item.prezzo) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+    <script>
+        <!-- modifica dello stato dell'ordine -->
+        document.getElementById('order-status').addEventListener('change', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const newStatus = this.value;
+            fetch(`/update_order_status/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showPopup('Stato dell\'ordine aggiornato con successo', true);
+                    } else {
+                        showPopup('Errore nell\'aggiornamento dello stato dell\'ordine', false);
+                    }
+                });
+        });
+
+        <!-- Funzione per chiudere il popup -->
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'none';
+        });
+
+        <!-- Funzione per mostrare un popup -->
+        function showPopup(message, isSuccess) {
+            const popup = document.getElementById('popup');
+            const popupMessage = document.getElementById('popup-message');
+            popupMessage.textContent = message;
+            if (isSuccess) {
+                popup.classList.add('popup-success');
+                popup.classList.remove('popup-error');
+            } else {
+                popup.classList.add('popup-error');
+                popup.classList.remove('popup-success');
+            }
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,126 @@
+<!-- products.html -->
+<!-- Pagina di visualizzazione di tutti i prodotti con posibili filtri-->
+
+{% extends 'base.html' %}
+
+{% block title %}Prodotti{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- Search Form -->
+    <div class="container mt-5">
+        <form method="GET" action="/product">
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" name="name" placeholder="Nome prodotto">
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" name="min_price" placeholder="Prezzo minimo" min="0">
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" name="max_price" placeholder="Prezzo massimo" min="0">
+                </div>
+                <div class="col">
+                    <select class="form-control" name="category">
+                        <option value="">Tutte le categorie</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Cerca</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Product List -->
+    <div class="container mt-5">
+        <h2>Prodotti</h2>
+        {% if products %}
+            <p>Trovati {{ products|length }} prodotti.</p>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img src="{{ url_for('static', filename='uploads/prodotto_' ~ product.idprodotto ~ '.jpg') }}" class="card-img-top" alt="{{ product.titolo }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.titolo }}</h5>
+                                <p class="card-text">
+                                    {{ product.descrizione[:200] }}
+                                    {% if product.descrizione|length > 200 %}...{% endif %}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a href="/product_detail/{{ product.idprodotto }}" class="btn btn-sm btn-outline-secondary">Dettagli</a>
+                                        <button class="btn btn-sm btn-outline-secondary add-to-cart" data-product-id="{{ product.idprodotto }}">Aggiungi al Carrello</button>
+                                    </div>
+                                    <small class="price">€{{ "%.2f"|format(product.prezzo) }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Nessun prodotto trovato.</p>
+        {% endif %}
+    </div>
+
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <p id="popup-message"></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        <!-- Funzione per aggiungere un prodotto al carrello -->
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                fetch(`/add_cart/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const popup = document.getElementById('popup');
+                        const popupMessage = document.getElementById('popup-message');
+                        popupMessage.textContent = data.message;
+                        if (data.success) {
+                            popup.classList.add('popup-success');
+                            popup.classList.remove('popup-error');
+                        } else {
+                            popup.classList.add('popup-error');
+                            popup.classList.remove('popup-success');
+                        }
+                        popup.style.display = 'block';
+                        setTimeout(() => {
+                            popup.style.display = 'none';
+                        }, 3000);
+                    });
+            });
+        });
+
+        <!-- Funzione per chiudere il popup -->
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'none';
+        });
+
+    </script>
+{% endblock %}

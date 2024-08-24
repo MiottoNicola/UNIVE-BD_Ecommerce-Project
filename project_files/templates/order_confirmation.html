@@ -1,0 +1,55 @@
+<!-- order_confirmation.html -->
+<!-- Pagina di conferma dell'ordine -->
+
+{% extends 'base.html' %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block title %}Conferma Ordine{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>
+            Ordine confermato con successo!
+            <a href="{{ url_for('profile') }}" class="btn btn-primary float-right">Torna al Profilo</a>
+        </h2>
+        <!-- Dettagli generali dell'ordine -->
+        <p>
+            <strong>Numero Ordine:</strong> {{ order.idordine }}<br />
+            <strong>Data:</strong> {{ order.data }}<br />
+            <strong>Totale:</strong> €{{ "%.2f"|format(order.totale) }}<br /><br />
+            <strong>Indirizzo di Fatturazione:</strong><br />
+            {{ order.destinatario }}<br />
+            {{ order.indirizzo }}<br />
+            {{ order.città }}, {{ order.provincia }} {{ order.cap }}<br /><br />
+        </p>
+        <!-- Dettagli dei prodotti dentro l'ordine -->
+        <h3>Prodotti</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Quantità</th>
+                <th>Prezzo</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in products %}
+                <tr>
+                    <td>{{ item.prodotto.titolo }}</td>
+                    <td>{{ item.quantità }}</td>
+                    <td>€{{ "%.2f"|format(item.prodotto.prezzo) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

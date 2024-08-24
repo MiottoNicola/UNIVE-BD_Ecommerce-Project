@@ -1,0 +1,147 @@
+<!-- product_detail.html -->
+<!-- Pagina visualizzazione dettagli prodotto con possibilità di aggiungere recensioni -->
+
+{% extends 'base.html' %}
+
+{% block title %}Dettagli Prodotto{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- Product Detail -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='uploads/prodotto_' ~ product.idprodotto ~ '.jpg') }}" class="img-fluid" alt="Product Image">
+            </div>
+            <div class="col-md-6">
+                <h2>{{ product.titolo }}</h2>
+                <p class="text-muted">
+                    Autore: {{ product.autore }}<br />
+                    Categoria: {{ product.categoria }} <br />
+                    Anno di Pubblicazione: {{ product.annopubblicazione }} <br />
+                    Disponibilità: {{ product.quantità }}
+                </p>
+                <p>{{ product.descrizione }}</p>
+                <h3 class="text-muted">€{{ "%.2f"|format(product.prezzo) }}</h3>
+                <button id="add-to-cart" class="btn btn-primary btn-lg" data-product-id="{{ product.idprodotto }}">Aggiungi al Carrello</button>
+            </div>
+        </div>
+        <br /><hr>
+        <!-- Reviews Section -->
+        <div class="reviews mt-5">
+            <h3>Recensioni:</h3>
+            {% if recensioni %}
+                {% for recensione in recensioni %}
+                    <div class="review mb-3">
+                        <strong>{{ recensione.utente }}</strong>
+                        <div>
+                            {% for i in range(recensione.voto) %}
+                                <span>&#9733;</span>
+                            {% endfor %}
+                            {% for i in range(5 - recensione.voto) %}
+                                <span>&#9734;</span>
+                            {% endfor %}
+                        </div>
+                        <h5>{{ recensione.titolo }}</h5>
+                        <p>{{ recensione.testo }}</p>
+                        <small class="text-muted">{{ recensione.data }}</small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Nessuna recensione disponibile.</p>
+            {% endif %}
+        </div>
+        {% if already_reviewed is defined and already_reviewed %}
+            <div class="alert alert-warning">Limite recensioni ragigungo per questo prodotto</div>
+        {% else %}
+            {% if user is not none %}
+                <!-- Add Review Form -->
+                <div class="add-review mt-5">
+                    <h3>Aggiungi una recensione:</h3>
+                    <div class="text-muted">
+                        Massimo 1 recensione per prodotto. <br />
+                        Le recensioni non possono essere modificate o eliminate.
+                    </div><br />
+                    <form method="POST" action="{{ url_for('add_review', idprodotto=product.idprodotto) }}">
+                        <div class="form-group">
+                            <label for="title">Titolo</label>
+                            <input type="text" class="form-control" id="titolo" name="titolo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="text">Testo</label>
+                            <textarea class="form-control" id="testo" name="testo" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="stars">Stelle</label>
+                            <select class="form-control" id="voto" name="voto" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Invia Recensione</button>
+                    </form>
+                </div>
+            {% endif %}
+            {% if user is none %}
+                <p class="alert-warning">Per lasciare una recensione devi essere autenticato.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close">&times;</span>
+            <p id="popup-message"></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        <!-- Funzione per aggiungere un prodotto al carrello -->
+        document.getElementById('add-to-cart').addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            fetch(`/add_cart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const popup = document.getElementById('popup');
+                    const popupMessage = document.getElementById('popup-message');
+                    popupMessage.textContent = data.message;
+                    if (data.success) {
+                        popup.classList.add('popup-success');
+                        popup.classList.remove('popup-error');
+                    } else {
+                        popup.classList.add('popup-error');
+                        popup.classList.remove('popup-success');
+                    }
+                    popup.style.display = 'block';
+                    setTimeout(() => {
+                        popup.style.display = 'none';
+                    }, 3000);
+                });
+        });
+
+        <!-- Funzione per chiudere il popup -->
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'none';
+        });
+    </script>
+{% endblock %}

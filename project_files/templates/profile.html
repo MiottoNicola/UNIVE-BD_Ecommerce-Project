@@ -1,0 +1,158 @@
+<!-- profile.html -->
+<!-- Pagina di profilo utente con ordini effettuati per l'acquirente, con ordini ricevuti/effettuati e prodotti aggiunti per il venditore-->
+
+{% extends 'base.html' %}
+
+{% block title %}Profilo{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <!-- Profilo Utente -->
+        <h2>
+            Profilo Utente
+            <a href="/delete_profile" class="btn btn-sm btn-danger float-right">Elimina profilo</a>
+        </h2>
+        <strong>Nome:</strong> {{ user.nome }} <br />
+        <strong>Cognome:</strong> {{ user.cognome }} <br />
+        <strong>Email:</strong> {{ user.email }} <br />
+        <strong>Ruolo:</strong>
+        {%  if user.ruolo == 10 %} venditore {% else %} acquirente {% endif %} <br /> <br />
+        <hr /> <br />
+        <!-- Prodotti aggiunti -->
+        {% if user.ruolo == 10 %}
+            <h3>
+                Prodotti Aggiunti
+                <a href="/add_product" class="btn btn-sm btn-primary float-right">Aggiungi Prodotto</a>
+            </h3>
+            {% if products %}
+                {% if error_product is defined %}
+                    <div class="alert alert-danger">{{ error_product }}</div>
+                {% endif %}
+                {% if succ_product is defined %}
+                    <div class="alert alert-success">{{ succ_product }}</div>
+                {% endif %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrizione</th>
+                        <th>Prezzo</th>
+                        <th>Categoria</th>
+                        <th>Quantità</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.titolo }}</td>
+                            <td>{{ product.descrizione }}</td>
+                            <td>€{{ "%.2f"|format(product.prezzo) }}</td>
+                            <td>{{ product.categoria }}</td>
+                            <td>{{ product.quantità }}</td>
+                            <td><a href="/product_detail/{{ product.idprodotto }}" class="btn btn-sm btn-primary">Dettagli</a></td>
+                            <td><a href="/edit_product/{{ product.idprodotto }}" class="btn btn-sm btn-warning">Modifica</a></td>
+                            <td><a href="/delete_product/{{ product.idprodotto }}" class="btn btn-sm btn-danger">Elimina</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nessun prodotto aggiunto.</p>
+            {% endif %}
+            <br /><hr><br />
+
+            <!-- Ordini Ricevuti -->
+            <h3>Ordini Ricevuti</h3>
+            {% if my_orders %}
+                {% if error_orders is defined %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+                {% if succ_orders is defined %}
+                    <div class="alert alert-success">{{ succ }}</div>
+                {% endif %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>N. Ordine</th>
+                        <th>Data</th>
+                        <th>Titolo</th>
+                        <th>Quantità</th>
+                        <th>Totale</th>
+                        <th>Stato</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for my_order in my_orders %}
+                        <tr>
+                            <td>{{ my_order.idordine }}</td>
+                            <td>{{ my_order.data }}</td>
+                            <td>{{ my_order.titolo }}</td>
+                            <td>{{ my_order.quantità }}</td>
+                            <td>€{{ "%.2f"|format(my_order.prezzo) }}</td>
+                            {% if my_order.stato == 1 %}
+                                <td><div class="btn btn-sm btn-danger">Nuovo</div></td>
+                            {% elif my_order.stato == 2 %}
+                                <td><div class="btn btn-sm btn-warning">In lavorazione</div></td>
+                            {% elif my_order.stato == 3 %}
+                                <td><div class="btn btn-sm btn-success">Spedito</div></td>
+                            {% endif %}
+                            <td><a href="/seller_order/{{ my_order.idordine }}" class="btn btn-sm btn-primary">Dettagli</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nessun ordine ricevuto.</p>
+            {% endif %}
+            <br /><hr><br />
+        {% endif %}
+
+        <!-- Ordini Effettuati -->
+        <h3>Ordini Effettuati</h3>
+        {% if orders %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>N. Ordine</th>
+                    <th>Data</th>
+                    <th>Totale</th>
+                    <th>Stato</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.idordine }}</td>
+                        <td>{{ order.data }}</td>
+                        <td>€{{ "%.2f"|format(order.totale) }}</td>
+                        {% if order.stato == 1 %}
+                            <td><div class="btn btn-sm btn-danger">Nuovo</div></td>
+                        {% elif order.stato == 2 %}
+                            <td><div class="btn btn-sm btn-warning">In lavorazione</div></td>
+                        {% elif order.stato == 3 %}
+                            <td><div class="btn btn-sm btn-success">Spedito</div></td>
+                        {% endif %}
+                        <td><a href="/order/{{ order.idordine }}" class="btn btn-sm btn-primary">Dettagli</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Nessun ordine eseguito.</p>
+        {% endif %}
+    </div>
+{% endblock %}

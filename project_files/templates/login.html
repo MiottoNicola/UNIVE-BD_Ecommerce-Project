@@ -1,0 +1,44 @@
+<!-- login.html -->
+<!-- Pagina di accesso al sito -->
+
+{% extends "base.html" %}
+
+{% block title %}Accesso{% endblock %}
+
+{% block profile %}
+    <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+    <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+{% endblock %}
+
+{% block content %}
+    <!-- Login Form -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <h2 class="card-header">Accesso</h2>
+                    <div class="card-body">
+                        <form method="POST" action="/login" accept-charset="utf-8">
+                            {% if error is defined %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endif %}
+                            {% if succ is defined %}
+                                <div class="alert alert-success">{{ succ }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="username">Email</label>
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Inserisci l'email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Inserisci la password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Accedi</button>
+                            <a href="/register" class="btn btn-secondary">Registrati</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+<!-- order.html -->
+<!-- Pagina di dettagli dell'ordine legato ad un id specifico-->
+
+{% extends 'base.html' %}
+
+{% block title %}Dettagli Ordine{% endblock %}
+
+{% block profile %}
+    {% if user is not none %}
+        <li class="nav-item"><a class="nav-link" href="/profile">Profilo</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Esci</a></li>
+    {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login">Accedi</a></li>
+        <li class="nav-item"><a class="nav-link" href="/register">Registrati</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <!-- Dettagli generali dell'ordine -->
+    <div class="container mt-5">
+        <h2>Dettagli Ordine</h2>
+        <p>
+            <strong>Numero Ordine:</strong> {{ order.idordine }}<br />
+            <strong>Data:</strong> {{ order.data }}<br />
+            <strong>Totale:</strong> €{{ "%.2f"|format(order.totale) }}<br/>
+            <strong>Stato:</strong>
+            {% if order.stato == 1 %}
+                Nuovo
+            {% elif order.stato == 2 %}
+                In lavorazione
+            {% elif order.stato == 3 %}
+                Spedito
+            {% endif %}
+        </p>
+        <!-- Dettagli dei prodotti dentro l'ordine -->
+        <h3>Prodotti</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Quantità</th>
+                <th>Prezzo</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in products %}
+                <tr>
+                    <td>{{ item.titolo }}</td>
+                    <td>{{ item.quantità }}</td>
+                    <td>€{{ "%.2f"|format(item.prezzo) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

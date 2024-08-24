@@ -1,0 +1,89 @@
+/* Custom CSS */
+
+.jumbotron {
+    background-color: #f8f9fa;
+    border-radius: 0.3rem;
+}
+
+.card-img-top {
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.price {
+    color: #000000; /* Change to a more visible color */
+    font-weight: bold; /* Make the text bold */
+    font-size: 1.2rem
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    right: 20px;
+    top: 20px;
+    width: 300px;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.popup-success {
+    background-color: #4CAF50; /* Green background */
+}
+
+.popup-error {
+    background-color: #f44336; /* Red background */
+}
+
+.popup-content {
+    padding: 20px;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: white; /* White close button */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+ .reviews {
+     border-top: 1px solid #e9ecef;
+     padding-top: 10px;
+ }
+.review {
+    margin-bottom: 10px;
+}
+.review strong {
+    display: block;
+}
+.review h5 {
+    margin: 0;
+}
+.review p {
+    margin: 0;
+}
+.review small {
+    display: block;
+    color: #6c757d;
+}
+.review span {
+    color: #ffc107;
+}
